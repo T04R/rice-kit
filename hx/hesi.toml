@@ -1,0 +1,57 @@
+"ui.menu" = { fg = "#000000", bg = "gray" }
+"ui.menu.selected" = { modifiers = ["reversed"] }
+"ui.linenr" = { fg = "#808080", bg = "#000000" }
+"ui.popup" = { bg = "black" }
+"ui.window" = { bg = "black" }
+"ui.linenr.selected" = { fg = "#08bdbd", bg = "#000000", modifiers = ["bold"] }
+"ui.selection" = { fg = "gray", modifiers = ["reversed"] }
+"comment" = { fg = "#808080" }
+"ui.statusline" = { fg = "#000000", bg = "gray" }
+"ui.statusline.inactive" = { fg = "gray", bg = "#ffffff" }
+"ui.help" = { fg = "white", bg = "black" }
+"ui.cursor" = { fg = "#000000", bg = "gray" }
+"ui.cursor.primary" = { fg = "#000000", bg = "#08dbdb" }
+"ui.virtual.whitespace" = "light-gray"
+"ui.virtual.jump-label" = { fg = "blue", modifiers = ["bold", "underlined"] }
+"ui.virtual.ruler" =  { bg = "#202020" }
+"variable" = "#c10b29"
+"constant.numeric" = "yellow"
+"constant" = "yellow"
+"attribute" = "yellow"
+"type" = "light-yellow"
+"ui.cursor.match" = { fg = "light-yellow", modifiers = ["underlined"] }
+"string"  = "light-green"
+"variable.other.member" = "light-green"
+"constant.character.escape" = "light-cyan"
+"function" = "light-blue"
+"constructor" = "light-blue"
+"special" = "light-blue"
+"keyword" = "light-magenta"
+"label" = "light-magenta"
+"namespace" = "light-magenta"
+
+"punctuation.bracket" = "#00cc00" 
+"operator" = "#00cc00"
+"punctuation.delimiter" = "#00cc00"
+
+"markup.heading" = "light-blue"
+"markup.list" = "light-red"
+"markup.bold" = { fg = "light-yellow", modifiers = ["bold"] }
+"markup.italic" = { fg = "light-magenta", modifiers = ["italic"] }
+"markup.strikethrough" = { modifiers = ["crossed_out"] }
+"markup.link.url" = { fg = "yellow", modifiers = ["underlined"] }
+"markup.link.text" = "light-red"
+"markup.quote" = "light-cyan"
+"markup.raw" = "light-green"
+
+"diff.plus" = "light-green"
+"diff.delta" = "yellow"
+"diff.minus" = "light-red"
+
+"diagnostic" = { modifiers = ["underlined"] }
+"ui.gutter" = { bg = "#000000" }
+"info" = "light-blue"
+"hint" = "gray"
+"debug" = "gray"
+"warning" = "yellow"
+"error" = "light-red"

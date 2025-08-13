@@ -1,0 +1,12 @@
+#brigh
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/sh -c 'echo 10000 > /sys/class/backlight/intel_backlight/brightness'"
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chown tor /sys/class/backlight/intel_backlight/brightness"
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chmod 664 /sys/class/backlight/intel_backlight/brightness"
+#vol
+ACTION=="add", SUBSYSTEM=="sound", RUN+="/bin/sh -c 'amixer sset Master 9% >/dev/null'"
+
+
+
+
+
+

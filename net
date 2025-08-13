@@ -1,0 +1,2 @@
+modules_enp3s0="iwd"
+config_enp3s0="dhcp"

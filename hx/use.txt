@@ -1,0 +1,10 @@
+pacman -S xclip wl-clipboard
+
+cp hesi.tomt ~/.config/helix/runtime/themes/hesi.toml
+cp config.toml ~/.config/helix/config.toml
+
+#if want use hx instead of helix in arch
+mv /usr/bin/helix /usr/bin/hx
+
+
+
