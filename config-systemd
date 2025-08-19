@@ -1,0 +1,120 @@
+# exec --no-startup-id nm-applet 
+# nano /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
+
+client.focused   #7575a3 #222222  #ffffff  #208000  #7575a3
+client.unfocused #333333 #222222 #888888 #292d3e #222222
+client.focused_inactive #444444 #222222 #bbbbbb #292d3e #222222
+
+client.urgent          #2f343a #900000 #ffffff #900000
+client.placeholder     #000000 #0c0c0c #ffffff #000000
+client.background      #ffffff
+
+font pango:FiraCode Retina 12 monospace 9
+
+bar {
+    colors {
+        background        #000000
+        statusline        #00ff00
+        separator         #007700
+
+        focused_workspace  #000000 #000000 #00FF00
+        active_workspace   #000000 #000000 #ff0000
+        inactive_workspace #000000 #000000 #777777
+        urgent_workspace   #ff0000 #000000 #ff0000
+        binding_mode       #000000 #BF0000 #ffffff
+    }
+
+    id primary
+    position top
+    font pango:FiraCode Retina 12 monospace 10
+    status_command ~/.config/i3/rice-kit/bar/target/release/bar
+}
+
+set $mod Mod4
+bindsym $mod+Return exec --no-startup-id st -e tmux new-session -A -s 1
+bindsym $mod+f exec --no-startup-id firefox
+bindsym $mod+p exec --no-startup-id thunar
+bindsym $mod+n exec --no-startup-id bash ~/.config/i3/rice-kit/note.sh
+bindsym $mod+m exec --no-startup-id bash ~/.config/i3/rice-kit/quickranger.sh
+bindsym Mod1+Shift+R exec --no-startup-id sh -c 'tmux kill-server && tmux source-file ~/.tmux.conf'
+
+#for_window [class="mpv"] floating enable
+for_window [title="note"] floating enable, move absolute position 0 px 24 px, resize set 30 ppt 42 ppt
+for_window [title="quickranger"] floating enable, move absolute position 1435 px 24 px, resize set 25 ppt 60 ppt
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym Control+Shift+Left move left
+bindsym Control+Shift+Down move down
+bindsym Control+Shift+Up move up
+bindsym Control+Shift+Right move right
+
+bindsym $mod+v split v
+bindsym $mod+h split h
+bindsym Control+Shift+q kill
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exit
+
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 0
+
+bindsym $mod+Shift+Left  resize shrink width 10 px or 10 ppt
+bindsym $mod+Shift+Right resize grow   width 10 px or 10 ppt
+bindsym $mod+Shift+Up    resize shrink height 10 px or 10 ppt
+bindsym $mod+Shift+Down  resize grow   height 10 px or 10 ppt
+
+bindsym Control+Shift+1 move container to workspace number 1; workspace number 1
+bindsym Control+Shift+2 move container to workspace number 2; workspace number 2
+bindsym Control+Shift+3 move container to workspace number 3; workspace number 3
+bindsym Control+Shift+4 move container to workspace number 4; workspace number 4
+bindsym Control+Shift+5 move container to workspace number 5; workspace number 5
+bindsym Control+Shift+6 move container to workspace number 6; workspace number 6
+bindsym Control+Shift+7 move container to workspace number 7; workspace number 7
+bindsym Control+Shift+8 move container to workspace number 8; workspace number 8
+bindsym Control+Shift+9 move container to workspace number 9; workspace number 9
+bindsym Control+Shift+0 move container to workspace number 0; workspace number 0
+
+mode "media" {
+    bindsym Up exec pamixer --increase 1
+    bindsym Down exec pamixer --decrease 1
+    bindsym m exec pamixer --toggle-mute
+ 
+    bindsym Left exec bash ~/.config/i3/rice-kit/brith-down.sh
+    bindsym Right exec bash ~/.config/i3/rice-kit/brith-up.sh
+    bindsym s exec scrot "$HOME/Pictures/screenshot_%Y-%m-%d-%H%M%S.png"
+
+    bindsym v exec --no-startup-id bash ~/.config/i3/rice-kit/record_screen.sh
+    bindsym y exec --no-startup-id bash ~/.config/i3/rice-kit/voice.sh
+    bindsym w exec --no-startup-id bash ~/.config/i3/rice-kit/webcam-voice.sh 
+    bindsym h exec --no-startup-id bash ~/.config/i3/rice-kit/video.sh
+ 
+    bindsym $mod+s mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+s mode "media"
+
+mode "which" {
+    bindsym s exec --no-startup-id systemctl suspend, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mod "default"
+    bindsym p exec --no-startup-id systemctl poweroff, mode "default"
+    bindsym l exec --no-startup-id "i3lock -c 000000", mode "default"
+    bindsym k exec --no-startup-id "loginctl terminate-session $XDG_SESSION_ID", mode "default"
+
+    bindsym $mod+w mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+w mode "which"
+
