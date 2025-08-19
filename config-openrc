@@ -105,7 +105,7 @@ mode "media" {
 
 bindsym $mod+s mode "media"
 
-mode "system" {
+mode "which" {
     bindsym s exec --no-startup-id "loginctl suspend"
     bindsym r exec --no-startup-id "sudo shutdown -r now"
     bindsym p exec --no-startup-id "sudo shutdown -h now"
@@ -116,4 +116,4 @@ mode "system" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+w mode "system"
+bindsym $mod+w mode "which"
