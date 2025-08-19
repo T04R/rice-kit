@@ -116,4 +116,3 @@ mode "which" {
 }
 
 bindsym $mod+w mode "which"
-
