@@ -84,15 +84,23 @@
 ### Installation Guide:
 Gentoo
 ```bash
-sudo emerge --sync
 echo "x11-drivers/xf86-input-libinput" >> /etc/portage/package.use
 echo "sys-fs/jmtpfs ~amd64" | sudo tee -a /etc/portage.accept.keywords/jmptfs
 echo "media-video/ffmpeg x264 x265 fdk-aac mp3 opus" | sudo tee -a /etc/portage/package.use/ffmpeg
 sudo cp rule.rules /etc/udev/rules.d/rule.rules
 echo "$USER ALL=(ALL) NOPASSWD: /sbin/shutdown, /sbin/loginctl" | sudo tee -a /etc/sudoers
 
+sudo emerge --sync
 sudo emerge --ask x11-wm/i3 x11-misc/i3lock x11-misc/i3status app-misc/tmux app-shells/zsh media-fonts/fira-code app-misc/ranger x11-misc/xclip sys-auth/elogind xf86-input-libinput media-video/ffmpeg media-gfx/scrot x11-apps/xwininfo x11-misc/xdotool alsa-utils alsa-libs media-video/mpv jmptfs
 sudo rc-update add elogind
+```
+Arch
+```bash
+pacman -Syu; sudo pacman -S i3-wm i3lock i3status tmux zsh ttf-fira-code ranger xclip xf86-input-libinput ffmpeg scrot jmtpfs xorg-xwininfo xdotool alsa-utils mpv
+```
+Debian
+```bash
+sudo apt update; sudo apt install -y i3 i3lock i3status tmux zsh fonts-firacode ranger xclip xserver-xorg-input-libinput ffmpeg scrot jmtpfs x11-utils xdotool alsa-utils mpv
 ```
 ```bash
 git clone https://github.com/T04R/rice-kit.git
