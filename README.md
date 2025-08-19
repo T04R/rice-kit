@@ -95,11 +95,11 @@ sudo rc-update add elogind
 ```
 Arch
 ```bash
-sudo pacman -Syu; sudo pacman -S i3-wm i3lock i3status tmux zsh ttf-fira-code ranger xclip xf86-input-libinput ffmpeg scrot jmtpfs xorg-xwininfo xdotool alsa-utils mpv
+sudo pacman -Syu; sudo pacman -S i3-wm i3lock i3status tmux zsh ttf-fira-code ranger xclip xf86-input-libinput ffmpeg scrot jmtpfs xorg-xwininfo xdotool alsa-utils mpv dzen2
 ```
 Debian
 ```bash
-sudo apt update; sudo apt install -y i3 i3lock i3status tmux zsh fonts-firacode ranger xclip xserver-xorg-input-libinput ffmpeg scrot jmtpfs x11-utils xdotool alsa-utils mpv
+sudo apt update; sudo apt install -y i3 i3lock i3status tmux zsh fonts-firacode ranger xclip xserver-xorg-input-libinput ffmpeg scrot jmtpfs x11-utils xdotool alsa-utils mpv dzen2
 ```
 And:
 ```bash
