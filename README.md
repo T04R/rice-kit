@@ -31,7 +31,7 @@
 - Webcam (`w`)
 - Voice recording (`y`)
 
-#### Which Mode (`mod + w`):
+#### System Mode (`mod + w`):
 - Shutdown (`p`)
 - Reboot (`r`)
 - Suspend (`s`)
