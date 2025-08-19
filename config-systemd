@@ -104,7 +104,7 @@ mode "media" {
 
 bindsym $mod+s mode "media"
 
-mode "which" {
+mode "system" {
     bindsym s exec --no-startup-id systemctl suspend, mode "default"
     bindsym r exec --no-startup-id systemctl reboot, mod "default"
     bindsym p exec --no-startup-id systemctl poweroff, mode "default"
@@ -115,5 +115,5 @@ mode "which" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+w mode "which"
+bindsym $mod+w mode "system"
 
