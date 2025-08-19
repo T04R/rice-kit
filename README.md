@@ -76,7 +76,6 @@
 
 #### Additional Features:
 - Preconfigured nftables
-- Automatic driver detection
 - Touchpad gestures support
 
 ---
@@ -115,6 +114,7 @@ cargo build --release
 ```
 #### Quick Tools:
 - **Quick Note** & **Quick Ranger**
+- Quick Note `mod + n` 
 - MPV in no-video mode (works as music player with Ranger)
   Press `mod + m` to toggle Quick Ranger (background music continues).
   Replace Elisa/Amberol with any music player in the config for a seamless quick-music setup.
