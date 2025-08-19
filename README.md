@@ -108,7 +108,11 @@ git clone https://github.com/T04R/rice-kit.git
 cd rice-kit
 ./make.sh
 ```
-
+build bar 
+```bash
+cd ~/.config/i3/rice-kit/bar
+cargo build --release
+```
 #### Quick Tools:
 - **Quick Note** & **Quick Ranger**
 - MPV in no-video mode (works as music player with Ranger)
