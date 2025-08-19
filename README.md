@@ -82,22 +82,17 @@
 ---
 
 ### Installation Guide:
+Gentoo
 ```bash
 sudo emerge --sync
 echo "x11-drivers/xf86-input-libinput" >> /etc/portage/package.use
-echo "sys-fs/jmtpfs ~amd64" | sudo tee -a /etc/portage.accept.keywords/jmtpfs
-
-sudo emerge --ask x11-wm/i3 x11-misc/i3lock x11-misc/i3status \
-    app-misc/tmux app-shells/zsh media-fonts/fira-code app-misc/ranger \
-    x11-misc/xclip sys-auth/elogind xf86-input-libinput
-
-sudo cp rule.rules /etc/udev/rules.d/rule.rules
-echo "tor ALL=(ALL) NOPASSWD: /sbin/shutdown, /sbin/loginctl" | sudo tee -a /etc/sudoers
-sudo rc-update add elogind
-
+echo "sys-fs/jmtpfs ~amd64" | sudo tee -a /etc/portage.accept.keywords/jmptfs
 echo "media-video/ffmpeg x264 x265 fdk-aac mp3 opus" | sudo tee -a /etc/portage/package.use/ffmpeg
-sudo emerge --ask media-video/ffmpeg media-gfx/scrot x11-apps/xwininfo \
-    x11-misc/xdotool alsa-utils alsa-libs media-video/mpv jmptfs
+sudo cp rule.rules /etc/udev/rules.d/rule.rules
+echo "$USER ALL=(ALL) NOPASSWD: /sbin/shutdown, /sbin/loginctl" | sudo tee -a /etc/sudoers
+
+sudo emerge --ask x11-wm/i3 x11-misc/i3lock x11-misc/i3status app-misc/tmux app-shells/zsh media-fonts/fira-code app-misc/ranger x11-misc/xclip sys-auth/elogind xf86-input-libinput media-video/ffmpeg media-gfx/scrot x11-apps/xwininfo x11-misc/xdotool alsa-utils alsa-libs media-video/mpv jmptfs
+sudo rc-update add elogind
 ```
 ```bash
 git clone https://github.com/T04R/rice-kit.git
