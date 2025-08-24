@@ -84,6 +84,7 @@
 Gentoo
 ```bash
 echo "x11-drivers/xf86-input-libinput" >> /etc/portage/package.use
+mkdir -p /etc/portage.accept.keywords
 echo "sys-fs/jmtpfs ~amd64" | sudo tee -a /etc/portage.accept.keywords/jmptfs
 echo "media-video/ffmpeg x264 x265 fdk-aac mp3 opus" | sudo tee -a /etc/portage/package.use/ffmpeg
 sudo cp rule.rules /etc/udev/rules.d/rule.rules
