@@ -45,4 +45,8 @@ mkdir ~/.config/mpv
 echo "no-audio-display" > ~/.config/mpv/mpv.conf
 echo "r cycle-values loop-file "inf" "no"" > ~/.config/mpv/input.conf
 
+#udev-rules
+sudo mkdir -p /etc/udev/rules.d
+sudo cp rule.rules /etc/udev/rules.d/rule.rules
+
 exit
