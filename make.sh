@@ -41,7 +41,7 @@ sudo mkdir -p /etc/X11/xorg.conf.d
 sudo cp 30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
 
 #mpv
-mkdir ~/.config/mpv
+mkdir -p ~/.config/mpv
 echo "no-audio-display" > ~/.config/mpv/mpv.conf
 echo "r cycle-values loop-file "inf" "no"" > ~/.config/mpv/input.conf
 
