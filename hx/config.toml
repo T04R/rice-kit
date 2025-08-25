@@ -1,4 +1,4 @@
-theme = "hesi.toml"
+theme = "hesi"
 
 [editor]
 true-color = true
