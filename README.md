@@ -105,6 +105,7 @@ And:
 ```bash
 git clone https://github.com/T04R/rice-kit.git
 cd rice-kit
+chmod +x make.sh
 ./make.sh
 ```
 build bar 
