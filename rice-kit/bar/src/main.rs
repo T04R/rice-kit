@@ -1,9 +1,8 @@
-
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use get_if_addrs::{get_if_addrs, IfAddr};
 use libc::{time, time_t, localtime};
 use alsa::mixer::SelemChannelId;
@@ -45,6 +44,45 @@ impl Default for ModuleConfig {
     }
 }
 
+struct DailyNetworkStats {
+    total_rx: u64,
+    total_tx: u64,
+    last_reset: u64,
+}
+
+impl DailyNetworkStats {
+    fn new() -> Self {
+        DailyNetworkStats {
+            total_rx: 0,
+            total_tx: 0,
+            last_reset: current_timestamp(),
+        }
+    }
+
+    fn update(&mut self, rx: u64, tx: u64) {
+        let now = current_timestamp();
+        if now - self.last_reset >= 86400 {
+            self.total_rx = 0;
+            self.total_tx = 0;
+            self.last_reset = now;
+        }
+
+        self.total_rx += rx;
+        self.total_tx += tx;
+    }
+
+    fn format_bytes(&self, bytes: u64) -> String {
+        if bytes >= 1_000_000_000 {
+            format!("{:.1}GB", bytes as f64 / 1_000_000_000.0)
+        } else if bytes >= 1_000_000 {
+            format!("{:.1}MB", bytes as f64 / 1_000_000.0)
+        } else if bytes >= 1_000 {
+            format!("{:.1}KB", bytes as f64 / 1_000.0)
+        } else {
+            format!("{}B", bytes)
+        }
+    }
+}
 
 fn main() {
     println!("{{\"version\":1}}");
@@ -55,7 +93,8 @@ fn main() {
     let mut stdout = io::stdout();
     let mut blink = false;
     let mut prev_cpu = read_cpu();
-    let mut prev_net = read_network_stats("wlan0");
+    let mut prev_net = read_network_stats("wlp0s20f3");
+    let mut daily_net = DailyNetworkStats::new();
 
     let mut counter: u8 = 0;
     let mut cached_battery_block = String::new();
@@ -75,12 +114,12 @@ fn main() {
         blink = !blink;
         let mut blocks = Vec::new();
 
-        if counter % 4 == 0 { // Every 2 seconds (4*500ms)
+        if counter % 4 == 0 {
             if config.battery {
                 cached_battery_block = get_battery(blink);
             }
             if config.ip {
-                cached_ip_blocks = get_ip_addresses("wlan0");
+                cached_ip_blocks = get_ip_addresses("wlp0s20f3");
             }
             if config.dns {
                 cached_dns_block = get_dns();
@@ -90,7 +129,7 @@ fn main() {
             }
         }
 
-        if counter % 2 == 0 { // Every 1 second (2*500ms)
+        if counter % 2 == 0 {
             if config.datetime {
                 cached_time_block = get_time();
             }
@@ -115,9 +154,8 @@ fn main() {
             }
         }
 
-        // Always updated modules (every 500ms)
         if config.network {
-            blocks.push(get_network(&mut prev_net, "wlan0"));
+            blocks.push(get_network(&mut prev_net, "wlp0s20f3", &mut daily_net));
         }
 
         if config.ip {
@@ -155,17 +193,14 @@ fn main() {
             blocks.push(cached_usb_block.clone());
         }
 
-        // Generate output
         let output = format!(",[\n{}]", blocks.join(",\n"));
         writeln!(stdout, "{}", output).unwrap();
         stdout.flush().unwrap();
 
-        // Update counter for refresh rates
         counter = (counter + 1) % 4;
-        thread::sleep(Duration::from_millis(500));
+        thread::sleep(Duration::from_secs(1)); // تغییر به 1 ثانیه
     }
 }
-
 
 fn make_block(text: &str, color: &str, border: Option<&str>, separator: bool) -> String {
     format!(
@@ -177,15 +212,19 @@ fn make_block(text: &str, color: &str, border: Option<&str>, separator: bool) ->
     )
 }
 
-// Network
-fn get_network(prev: &mut (u64, u64), interface: &str) -> String {
+fn get_network(prev: &mut (u64, u64), interface: &str, daily_net: &mut DailyNetworkStats) -> String {
     let curr = read_network_stats(interface);
     let (prev_rx, prev_tx) = *prev;
     let (curr_rx, curr_tx) = curr;
     *prev = curr;
 
-    let rx_kb = (curr_rx - prev_rx) as f64 / 1024.0;
-    let tx_kb = (curr_tx - prev_tx) as f64 / 1024.0;
+    let rx_bytes = curr_rx.saturating_sub(prev_rx);
+    let tx_bytes = curr_tx.saturating_sub(prev_tx);
+
+    daily_net.update(rx_bytes, tx_bytes);
+
+    let rx_kb = rx_bytes as f64 / 1024.0;
+    let tx_kb = tx_bytes as f64 / 1024.0;
 
     let format_speed = |speed: f64| {
         if speed >= 1000.0 {
@@ -195,13 +234,17 @@ fn get_network(prev: &mut (u64, u64), interface: &str) -> String {
         }
     };
 
-    let down_block = make_block(&format!("↓{}", format_speed(rx_kb)), "#0A79FF", None, false);
-    let up_block = make_block(&format!("↑{}", format_speed(tx_kb)), "#FF0000", None, true);
-    
+    let down_text = format!("↓{} ({})", format_speed(rx_kb), daily_net.format_bytes(daily_net.total_rx));
+    let up_text = format!("↑{} ({})", format_speed(tx_kb), daily_net.format_bytes(daily_net.total_tx));
+
+    let down_block = make_block(&down_text, "#0A79FF", None, false);
+    let up_block = make_block(&up_text, "#FF0000", None, true);
+
     format!("{},\n{}", down_block, up_block)
 }
 
-// IP
+
+
 fn get_ip_addresses(interface: &str) -> (String, String) {
     let (mut ipv4, mut ipv6) = ("ipv4".to_string(), "ipv6".to_string());
     let mut ipv4_color = "#FF0000";
@@ -227,11 +270,10 @@ fn get_ip_addresses(interface: &str) -> (String, String) {
 
     let ipv4_block = make_block(&ipv4, ipv4_color, None, false);
     let ipv6_block = make_block(&ipv6, ipv6_color, None, true);
-    
+
     (ipv4_block, ipv6_block)
 }
 
-// DNS
 fn get_dns() -> String {
     let (text, color) = match fs::read_to_string("/etc/resolv.conf") {
         Ok(content) => {
@@ -251,8 +293,6 @@ fn get_dns() -> String {
     make_block(&text, color, None, true)
 }
 
-
-// RAM
 fn get_ram(blink: bool) -> String {
     let meminfo = fs::read_to_string("/proc/meminfo").unwrap_or_default();
     let (total, available) = meminfo.lines().fold((0, 0), |(mut t, mut a), line| {
@@ -278,7 +318,6 @@ fn get_ram(blink: bool) -> String {
     }
 }
 
-//CPU
 fn get_cpu_and_temp(prev: &mut (u64, u64), blink: bool) -> String {
     let curr = read_cpu();
     let total = curr.0 - prev.0;
@@ -294,16 +333,14 @@ fn get_cpu_and_temp(prev: &mut (u64, u64), blink: bool) -> String {
     let temp = read_cpu_temp().unwrap_or(0.0);
     let text = format!("{:.1}% {:.1}°C", usage, temp);
 
-    if temp >= 70.0 {
+    // هشدار برای CPU بالای 80% یا دمای بالای 70 درجه
+    if usage >= 80.0 || temp >= 70.0 {
         let border_color = if blink { "#FF0000" } else { "#000000" };
         make_block(&text, "#FF0000", Some(border_color), true)
-    } else if usage >= 80.0 {
-        make_block(&text, "#FF0000", Some("#000000"), true)
     } else {
         make_block(&text, "#FFFFFF", Some("#000000"), true)
     }
 }
-
 
 fn get_volume() -> String {
     let (text, color) = match Mixer::new("default", false) {
@@ -341,9 +378,6 @@ fn get_volume() -> String {
     make_block(&text, color, None, false)
 }
 
-
-
-// Brightness
 fn get_brightness() -> String {
     let backlight_dir = if Path::new("/sys/class/backlight/intel_backlight").exists() {
         "/sys/class/backlight/intel_backlight"
@@ -368,7 +402,6 @@ fn get_brightness() -> String {
     make_block(&format!("B{:.0}%", percent), color, None, true)
 }
 
-// DateTime
 fn get_time() -> String {
     unsafe {
         let mut t: time_t = time(ptr::null_mut());
@@ -395,7 +428,6 @@ fn get_time() -> String {
     }
 }
 
-// Uptime
 fn get_uptime() -> String {
     let content = fs::read_to_string("/proc/uptime").unwrap_or_else(|_| "0 0".into());
     let uptime_seconds: u64 = content.split_whitespace()
@@ -415,7 +447,6 @@ fn get_uptime() -> String {
     make_block(&text, color, None, false)
 }
 
-// Battery
 fn get_battery(blink: bool) -> String {
     let (cap, status) = (
         fs::read_to_string("/sys/class/power_supply/BAT1/capacity").unwrap_or("0".into()),
@@ -435,7 +466,6 @@ fn get_battery(blink: bool) -> String {
     }
 }
 
-// Media recorder
 fn get_mp_status() -> String {
     let (text, color) = match fs::read_to_string("/tmp/ffmpeg-state") {
         Ok(content) => {
@@ -450,7 +480,6 @@ fn get_mp_status() -> String {
     make_block(&text, color, None, false)
 }
 
-// USB
 fn get_usb() -> String {
     let text = if Path::new("/dev/sdb").exists() || Path::new("/dev/sdb2").exists() {
         "▮"
@@ -459,8 +488,6 @@ fn get_usb() -> String {
     };
     make_block(text, "#FF0000", None, false)
 }
-
-// ===== Utility Functions =====
 
 fn parse_kb(s: &str) -> u64 {
     s.split_whitespace().nth(1).unwrap_or("0").parse().unwrap_or(0)
@@ -478,18 +505,71 @@ fn read_cpu() -> (u64, u64) {
 }
 
 fn read_cpu_temp() -> Option<f32> {
-    let paths = [
-        "/sys/class/thermal/thermal_zone0/temp",
-        "/sys/class/hwmon/hwmon0/temp1_input",
-        "/sys/class/hwmon/hwmon1/temp1_input",
+    let coretemp_paths = [
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp3_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp4_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp5_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon2/temp1_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon1/temp1_input",
+        "/sys/devices/platform/coretemp.0/hwmon/hwmon0/temp1_input",
     ];
-    for path in paths {
+
+    for path in &coretemp_paths {
         if let Ok(content) = fs::read_to_string(path) {
             if let Ok(temp) = content.trim().parse::<f32>() {
                 return Some(temp / 1000.0);
             }
         }
     }
+
+    let thermal_paths = [
+        "/sys/devices/virtual/thermal/thermal_zone0/temp",
+        "/sys/devices/virtual/thermal/thermal_zone1/temp",
+        "/sys/devices/virtual/thermal/thermal_zone2/temp",
+        "/sys/devices/virtual/thermal/thermal_zone3/temp",
+        "/sys/devices/virtual/thermal/thermal_zone4/temp",
+        "/sys/devices/virtual/thermal/thermal_zone5/temp",
+        "/sys/devices/virtual/thermal/thermal_zone6/temp",
+        "/sys/devices/virtual/thermal/thermal_zone7/temp",
+        "/sys/devices/virtual/thermal/thermal_zone8/temp",
+        "/sys/devices/virtual/thermal/thermal_zone9/temp",
+    ];
+
+    let mut temps = Vec::new();
+    for path in &thermal_paths {
+        if let Ok(content) = fs::read_to_string(path) {
+            if let Ok(temp) = content.trim().parse::<f32>() {
+                temps.push(temp / 1000.0);
+            }
+        }
+    }
+
+    if !temps.is_empty() {
+        let sum: f32 = temps.iter().sum();
+        return Some(sum / temps.len() as f32);
+    }
+
+    let general_paths = [
+        "/sys/class/thermal/thermal_zone0/temp",
+        "/sys/class/hwmon/hwmon0/temp1_input",
+        "/sys/class/hwmon/hwmon1/temp1_input",
+        "/sys/class/hwmon/hwmon2/temp1_input",
+        "/sys/class/hwmon/hwmon3/temp1_input",
+        "/sys/class/hwmon/hwmon4/temp1_input",
+        "/sys/class/hwmon/hwmon5/temp1_input",
+    ];
+
+    for path in &general_paths {
+        if let Ok(content) = fs::read_to_string(path) {
+            if let Ok(temp) = content.trim().parse::<f32>() {
+                return Some(temp / 1000.0);
+            }
+        }
+    }
+
     None
 }
 
@@ -509,3 +589,9 @@ fn read_network_stats(interface: &str) -> (u64, u64) {
     (0, 0)
 }
 
+fn current_timestamp() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+}
