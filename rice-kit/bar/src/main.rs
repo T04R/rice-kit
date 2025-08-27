@@ -93,7 +93,7 @@ fn main() {
     let mut stdout = io::stdout();
     let mut blink = false;
     let mut prev_cpu = read_cpu();
-    let mut prev_net = read_network_stats("wlp0s20f3");
+    let mut prev_net = read_network_stats("wlan0");
     let mut daily_net = DailyNetworkStats::new();
 
     let mut counter: u8 = 0;
@@ -119,7 +119,7 @@ fn main() {
                 cached_battery_block = get_battery(blink);
             }
             if config.ip {
-                cached_ip_blocks = get_ip_addresses("wlp0s20f3");
+                cached_ip_blocks = get_ip_addresses("wlan0");
             }
             if config.dns {
                 cached_dns_block = get_dns();
@@ -155,7 +155,7 @@ fn main() {
         }
 
         if config.network {
-            blocks.push(get_network(&mut prev_net, "wlp0s20f3", &mut daily_net));
+            blocks.push(get_network(&mut prev_net, "wlan0", &mut daily_net));
         }
 
         if config.ip {
