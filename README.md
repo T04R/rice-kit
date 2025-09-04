@@ -2,7 +2,7 @@
 
 
 
-### Custom Linux Compatible with OpenRC and Systemd
+### Custom Linux Compatible with Systemd and others 
 
 #### i3 Features:
 - Terminal (`mod + enter`)
