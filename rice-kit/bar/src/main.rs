@@ -198,7 +198,7 @@ fn main() {
         stdout.flush().unwrap();
 
         counter = (counter + 1) % 4;
-        thread::sleep(Duration::from_secs(1)); // تغییر به 1 ثانیه
+        thread::sleep(Duration::from_secs(1));
     }
 }
 
@@ -332,8 +332,7 @@ fn get_cpu_and_temp(prev: &mut (u64, u64), blink: bool) -> String {
 
     let temp = read_cpu_temp().unwrap_or(0.0);
     let text = format!("{:.1}% {:.1}°C", usage, temp);
-
-    // هشدار برای CPU بالای 80% یا دمای بالای 70 درجه
+    
     if usage >= 80.0 || temp >= 70.0 {
         let border_color = if blink { "#FF0000" } else { "#000000" };
         make_block(&text, "#FF0000", Some(border_color), true)
