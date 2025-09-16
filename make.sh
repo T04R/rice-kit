@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p ~/.config/i3
-read -p "which? other(o) systemd(s): " b
+read -p "which? openrc(o) systemd(s): " b
 
 if [ "$b" = "o" ]; then
     cp config-openrc ~/.config/i3/config
