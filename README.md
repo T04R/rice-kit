@@ -129,7 +129,5 @@ cargo build --release
 
 ---
 
-**Note:** Future updates may introduce new features or configuration changes.
-
----
+Note: Future updates may introduce new features or configuration changes.
 
