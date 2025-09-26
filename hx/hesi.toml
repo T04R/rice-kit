@@ -11,7 +11,7 @@
 "ui.help" = { fg = "white", bg = "black" }
 "ui.cursor" = { fg = "#000000", bg = "gray" }
 "ui.cursor.primary" = { fg = "#000000", bg = "#08dbdb" }
-"ui.virtual.whitespace" = "light-gray"
+"ui.virtual.whitespace" = "gray"
 "ui.virtual.jump-label" = { fg = "blue", modifiers = ["bold", "underlined"] }
 "ui.virtual.ruler" =  { bg = "#202020" }
 "variable" = "#c10b29"
