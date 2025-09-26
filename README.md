@@ -43,6 +43,7 @@
 - RAM usage
 - DNS, IPv6, and IPv4 display
 - Upload/download speed
+- Internet consumption
 - Brightness & volume levels
 - Date & time
 - Battery & uptime
