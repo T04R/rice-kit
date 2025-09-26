@@ -4,15 +4,14 @@ alert() {
     local message="$*"
     [ -z "$message" ] && message="Command executed!"
 
-    # tmux (اگر فعال باشد)
     [ -n "$TMUX" ] && tmux display-message -d 2000 "ALERT: $message"
 
     if command -v i3-nagbar >/dev/null; then
 
 WIDTH=110
-HEIGHT=25
+HEIGHT=20
 X_POS=0
-Y_POS=28
+Y_POS=23
 
 echo "^bg(#bf0000)^fg(#ffffff)^p(1)$message^p(5)" | dzen2 \
   -x "$X_POS" -y "$Y_POS" \
