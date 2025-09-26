@@ -127,7 +127,7 @@ cargo build --release
 #### Dynamic Bar:
 - Rust-written, responsive, and modular (toggle modules via `true`/`false` in config).
 
----
+#
 
-Note: Future updates may introduce new features or configuration changes.
+**Note**: Future updates may introduce new features or configuration changes.
 
