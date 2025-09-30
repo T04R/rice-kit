@@ -14,7 +14,7 @@
 "ui.virtual.whitespace" = "gray"
 "ui.virtual.jump-label" = { fg = "blue", modifiers = ["bold", "underlined"] }
 "ui.virtual.ruler" =  { bg = "#202020" }
-"variable" = "#c10b29"
+"variable" = "#C11B17"
 "constant.numeric" = "yellow"
 "constant" = "yellow"
 "attribute" = "yellow"
