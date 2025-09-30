@@ -55,6 +55,7 @@ C-s = ":write"
 C-x = ":q!"
 C-k = "kill_to_line_end"
 C-y = ":clipboard-yank"
+C-f = "file_picker"
 
 [keys.insert]
 S-tab = "move_parent_node_start"
@@ -68,6 +69,7 @@ C-s = ":write"
 C-x = ":q!"
 C-k = "kill_to_line_end"
 C-y = ":clipboard-yank"
+C-f = "file_picker"
 
 [keys.select]
 tab = "extend_parent_node_end"
