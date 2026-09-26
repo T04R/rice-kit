@@ -1,0 +1,3 @@
+#brigh
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="/bin/chown tor /sys/class/backlight/amdgpu_bl1/brightness"
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="/bin/chmod 664 /sys/class/backlight/amdgpu_bl1/brightness"
